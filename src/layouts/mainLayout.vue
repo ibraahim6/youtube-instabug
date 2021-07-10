@@ -1,22 +1,17 @@
 <template>
   <div class="layout">
-      <router-view />
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
   name: "MainLayout",
-  components: {
-  },
+  components: {},
   data() {
-    return {
-      
-    };
+    return {};
   },
-  methods: {
-   
-  },
+  methods: {},
   metaInfo() {
     return {
       title: `YouTube`,
@@ -25,5 +20,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>
