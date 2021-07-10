@@ -2,7 +2,7 @@
   <div class="home">
     <div v-for="video in videos" :key="video">
       <pre>
-      {{video}}
+      {{ video }}
       </pre>
     </div>
   </div>
@@ -12,26 +12,21 @@
 import { apiClient } from "@/config";
 export default {
   name: "Home",
-  components: {
-  },
-  data(){
-    return{
-      videos:[]
+  components: {},
+  data() {
+    return {
+      videos: [],
     };
   },
-  created(){
+  created() {
     this.fetchData();
   },
   methods: {
-    fetchData(){
-      apiClient
-            .get(
-              `/search?part=snippet&q=spongebob`
-            )
-            .then((res) => {
-              this.videos = res.data;
-            });
-    }
+    fetchData() {
+      apiClient.get(`/search?part=snippet&q=spongebob`).then((res) => {
+        this.videos = res.data;
+      });
+    },
   },
 };
 </script>

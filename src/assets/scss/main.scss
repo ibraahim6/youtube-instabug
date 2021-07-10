@@ -1,0 +1,33 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+    background-color: #f9f9f9;
+}
+
+.home {
+    padding: 2% 5%;
+}
+
+.container {
+    width: 100%;
+
+    height: auto;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.columns {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100px;
+}
+
+.column {
+    width: 100%;
+}
