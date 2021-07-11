@@ -15,6 +15,12 @@ const routes = [
         component: () => import("@/views/Home.vue"),
       },
       {
+        path: "/:q",
+        props: true,
+        name: "Home",
+        component: () => import("@/views/Home.vue"),
+      },
+      {
         path: "/video",
         name: "videoDetails",
         component: () => import("@/views/videoDetails.vue"),
