@@ -32,21 +32,10 @@ export default {
   },
   data() {
     return {
-        isMobile:null,
       loadBar: false,
     };
   },
-   created() {
-    window.addEventListener("resize", this.checkMobile);
-    this.checkMobile();
-  },
-  destroyed() {
-    window.removeEventListener("resize", this.checkMobile);
-  },
   methods: {
-      checkMobile() {
-      this.isMobile = window.innerWidth <= 500;
-    },
     loadingBar(data) {
       this.loadBar = data;
     },

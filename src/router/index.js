@@ -26,7 +26,8 @@ const routes = [
         component: () => import("@/views/videoDetails.vue"),
       },
       {
-        path: "/channel",
+        path: "/channel/:id",
+        props: true,
         name: "channelDetails",
         component: () => import("@/views/channelDetails.vue"),
       },

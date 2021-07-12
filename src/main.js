@@ -4,6 +4,8 @@ import router from "./router";
 import VueMeta from "vue-meta";
 Vue.use(VueMeta)
 import "@/assets/scss/main.scss";
+import { global } from "@/mixin/global.js"; 
+Vue.mixin(global);
 Vue.config.productionTip = false;
 
 new Vue({
