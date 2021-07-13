@@ -5,9 +5,9 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
-    name: "Home",
-    component: () => import("@/layouts/mainLayout.vue"),
+    path: "",
+    name: "MainLayout",
+    component: () => import("@/layouts/mainLayout"),
     children: [
       {
         path: "/",
@@ -21,7 +21,7 @@ const routes = [
         component: () => import("@/views/Home.vue"),
       },
       {
-        path: "/video/:id",
+        path: "/video/:type/:id/:playlistIdx",
         props: true,
         name: "videoDetails",
         component: () => import("@/views/videoDetails.vue"),

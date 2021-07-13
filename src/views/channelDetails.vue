@@ -32,7 +32,7 @@
                       "
                     />
                   </div>
-                  <div class="info-channel align-center my-20">
+                  <div class="info-channel align-center my-20 d-block">
                     <div>
                       {{ this.channelInfo.items[0].snippet.title }}
                     </div>
@@ -46,6 +46,7 @@
                           2
                         )} videos`
                       }}
+                   
                     </div>
                   </div>
                 </div>
@@ -55,7 +56,15 @@
           <div v-if="videos.length" class="row">
             <div v-for="(video, idx) in videos" :key="idx" class="column ma-8">
               <div class="card">
-                <router-link :to="`/video/${video.id}`">
+                <router-link
+                  :to="
+                    video.type == 'channel'
+                      ? `/channel/${video.id}`
+                      : video.type == 'playlist'
+                      ? `/video/playlist/${video.id}/1`
+                      : `/video/video/${video.id}/0`
+                  "
+                >
                   <div class="card-content w-100">
                     <div :class="`card-thumbnails img-${video.type}`">
                       <img
@@ -305,7 +314,7 @@ export default {
         options: {
           part: "id",
           channelId: this.id,
-          maxResults: "3",
+          maxResults: "5",
           //   regionCode: "eg",
           pageToken: "",
           order: "date",
@@ -389,6 +398,17 @@ export default {
     formatDate(date) {
       return new Date(date).toString().slice(4, 16);
     },
+    search() {
+      this.videos = [];
+      this.loadBar = true;
+      this.$emit("loadingBar", true);
+      setTimeout(() => {
+        this.$emit("loadingBar", false);
+      }, 3000);
+      this.fetchSearch();
+      this.loadState = false;
+    },
+
     returnQuery() {
       if (this.videoInfo.items[0].kind.includes("video")) {
         return `search?part=id&relatedToVideoId=${this.videoInfo.items[0].id}&type=video&maxResults=2&pageToken=${this.pageToken}`;

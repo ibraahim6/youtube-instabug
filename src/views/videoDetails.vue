@@ -8,8 +8,16 @@
       <div class="row justify-center">
         <div v-if="videoInfo && channelInfo" class="column-10 px-30">
           <div class="row space-between">
+            <!-- <div class="row"> -->
             <h3 class="w-90">
-              {{ `${videoInfo.items[0].snippet.title}` }}
+              {{
+                `${
+                  type == "video"
+                    ? videoInfo.items[0].snippet.title
+                    : listVideos[playlistIdx - 1] &&
+                      listVideos[playlistIdx - 1].snippet.title
+                }`
+              }}
             </h3>
             <button
               class="btn-transparent"
@@ -18,6 +26,7 @@
             >
               <i :class="`fas fa-sort-${readMore ? 'up' : 'down'}`"></i>
             </button>
+            <!-- </div> -->
           </div>
 
           <div class="row" id="container-statistics">
@@ -26,16 +35,29 @@
                 <span class="row space-between" :class="isMobile && 'w-100'">
                   <span class="">
                     {{
-                      `${formatNumberWithCommas(
-                        videoInfo.items[0].statistics.viewCount
-                      )}`
+                      `${
+                        type == "video"
+                          ? formatNumberWithCommas(
+                              videoInfo.items[0].statistics.viewCount
+                            )
+                          : formatNumberWithCommas(
+                              listVideos[playlistIdx - 1].statistics.viewCount
+                            )
+                      }`
                     }}
                     views
                   </span>
                   <span class="mx-5" v-if="!isMobile"> • </span>
                   <span>
                     {{
-                      `${formatDate(videoInfo.items[0].snippet.publishedAt)}`
+                      `${
+                        type == "video"
+                          ? formatDate(videoInfo.items[0].snippet.publishedAt)
+                          : formatDate(
+                              listVideos[playlistIdx - 1] &&
+                                listVideos[playlistIdx - 1].snippet.publishedAt
+                            )
+                      }`
                     }}
                   </span>
                 </span>
@@ -43,13 +65,20 @@
                   class="row space-between my-10"
                   :class="isMobile && 'w-100'"
                 >
+                  <!-- <div ></div> -->
                   <button class="btn-icon" :class="isMobile ? 'flex-col' : ''">
                     <i class="far fa-thumbs-up"></i>
                     <span class="mx-5">
                       {{
-                        `${formatNumbersWithKeys(
-                          videoInfo.items[0].statistics.likeCount
-                        )}`
+                        `${
+                          type == "video"
+                            ? formatNumbersWithKeys(
+                                videoInfo.items[0].statistics.likeCount
+                              )
+                            : formatNumbersWithKeys(
+                                listVideos[playlistIdx - 1].statistics.likeCount
+                              )
+                        }`
                       }}
                     </span>
                   </button>
@@ -57,9 +86,16 @@
                     <i class="far fa-thumbs-down"></i>
                     <span class="mx-5">
                       {{
-                        `${formatNumbersWithKeys(
-                          videoInfo.items[0].statistics.dislikeCount
-                        )}`
+                        `${
+                          type == "video"
+                            ? formatNumbersWithKeys(
+                                videoInfo.items[0].statistics.dislikeCount
+                              )
+                            : formatNumbersWithKeys(
+                                listVideos[playlistIdx - 1].statistics
+                                  .dislikeCount
+                              )
+                        }`
                       }}
                     </span>
                   </button>
@@ -105,7 +141,14 @@
                 <div v-if="isMobile && readMore" class="description-channel">
                   <hr />
                   <pre>
-                        {{ `${videoInfo.items[0].snippet.description}` }}
+                        {{
+                      `${
+                        type == "video"
+                          ? videoInfo.items[0].snippet.description
+                          : listVideos[playlistIdx - 1] &&
+                            listVideos[playlistIdx - 1].snippet.description
+                      }`
+                    }}
                     </pre
                   >
                 </div>
@@ -115,7 +158,14 @@
                   :class="readMore ? 'all-lines' : 'four-lines'"
                 >
                   <pre>
-                        {{ `${videoInfo.items[0].snippet.description}` }}
+                        {{
+                      `${
+                        type == "video"
+                          ? videoInfo.items[0].snippet.description
+                          : listVideos[playlistIdx - 1] &&
+                            listVideos[playlistIdx - 1].snippet.description
+                      }`
+                    }}
                     </pre
                   >
                 </div>
@@ -126,6 +176,7 @@
                 >
                   <span> {{ readMore ? "show less" : "show more" }} </span>
                 </button>
+                <!-- </div> -->
               </div>
               <hr />
             </div>
@@ -141,8 +192,10 @@
                 <router-link
                   :to="
                     video.type == 'channel'
-                      ? `/channel/${video.snippet.channelId}`
-                      : `/video/${video.id}`
+                      ? `/channel/${video.id}`
+                      : video.idx > 0
+                      ? `/video/playlist/${id}/${video.idx}`
+                      : `/video/${video.type}/${video.id}/0`
                   "
                 >
                   <div class="card-content w-100">
@@ -274,17 +327,20 @@
 <script>
 import { apiClient } from "@/config";
 export default {
-  name: "VideoDetails",
+  name: "Home",
   components: {
     IntersectionObserver: () => import("@/components/infiniteScroll"),
   },
   watch: {
     "$route.params": {
       handler() {
+        console.log("a7a");
         this.listVideos = [];
         this.pageToken = "";
+        this.idx = 1;
         this.loadBar = true;
         this.$emit("loadingBar", true);
+        console.log();
         setTimeout(() => {
           this.$emit("loadingBar", false);
         }, 3000);
@@ -304,12 +360,21 @@ export default {
       type: String,
       default: "",
     },
+    type: {
+      type: String,
+      default: "",
+    },
+    playlistIdx: {
+      type: String,
+      default: "0",
+    },
   },
   data() {
     return {
       readMore: false,
       loadState: false,
       loadBar: false,
+      channelImgs: [],
       pageToken: "",
       show: false,
       parts: {
@@ -339,6 +404,7 @@ export default {
           snippet: {},
         },
       ],
+      idx: 1,
     };
   },
   created() {
@@ -346,18 +412,27 @@ export default {
   },
   computed: {
     videoUrl() {
-      return `https://www.youtube-nocookie.com/embed/${this.id}?autoplay=1&loop=1&modestbranding=1&rel=0&iv_load_policy=3`;
+      return `https://www.youtube-nocookie.com/embed${
+        this.type == "video" ? `/${this.id}` : ""
+      }?${
+        this.type == "playlist"
+          ? `listType=playlist&list=${this.id}&index=${this.playlistIdx}`
+          : ""
+      }&autoplay=1&loop=1&modestbranding=1&rel=0&iv_load_policy=3`;
     },
     returnTitle() {
       return `${
-        this.videoInfo.items[0] && this.videoInfo.items[0].snippet.title
+        this.type == "video"
+          ? this.videoInfo.items[0] && this.videoInfo.items[0].snippet.title
+          : this.listVideos[this.playlistIdx - 1] &&
+            this.listVideos[this.playlistIdx - 1].snippet.title
       }`;
     },
   },
   methods: {
     async fetchInfo() {
       await apiClient
-        .get(`/videos?part=${this.parts.video.part}&id=${this.id}`)
+        .get(`/${this.type}s?part=${this.parts[this.type].part}&id=${this.id}`)
         .then((res) => {
           this.videoInfo = res.data;
           apiClient
@@ -374,33 +449,48 @@ export default {
     formatDate(date) {
       return new Date(date).toString().slice(4, 16);
     },
+    returnQuery() {
+      if (this.videoInfo.items[0].kind.includes("video")) {
+        return `search?part=id&relatedToVideoId=${this.videoInfo.items[0].id}&type=video&maxResults=2&pageToken=${this.pageToken}`;
+      } else {
+        return `playlistItems?part=id,snippet&playlistId=${this.videoInfo.items[0].id}&maxResults=2&pageToken=${this.pageToken}`;
+      }
+    },
     fetchListVideos() {
       this.loadState = true;
       setTimeout(() => {
-        apiClient
-          .get(
-            `/search?part=id&relatedToVideoId=${this.videoInfo.items[0].id}&type=video&maxResults=2&pageToken=${this.pageToken}`
-          )
-          .then((res3) => {
-            this.pageToken = res3.data.nextPageToken
-              ? res3.data.nextPageToken
-              : "";
-            res3.data.items.map((item) => {
-              apiClient
-                .get(
-                  `/videos?part=id,snippet,statistics,contentDetails&id=${item.id.videoId}`
-                )
-                .then((res4) => {
-                  res4.data.items.map((item2) => {
-                    this.listVideos.push({
-                      ...item2,
-                      type: "video",
-                    });
-                  });
-                  this.loadState = false;
+        apiClient.get(`/${this.returnQuery()}`).then((res3) => {
+          this.pageToken = res3.data.nextPageToken
+            ? res3.data.nextPageToken
+            : "";
+          res3.data.items.map((item) => {
+            //   if (this.type == "video") {
+            apiClient
+              .get(
+                `/videos?part=id,snippet,statistics,contentDetails&id=${
+                  this.type == `video`
+                    ? item.id.videoId
+                    : item.snippet.resourceId.videoId
+                }`
+              )
+              .then((res4) => {
+                res4.data.items.map((item2) => {
+                  this.type == `video`
+                    ? this.listVideos.push({
+                        ...item2,
+                        type: "video",
+                      })
+                    : this.listVideos.push({
+                        ...item2,
+                        idx: this.idx,
+                        type: "video",
+                      });
+                  this.idx++;
                 });
-            });
+                this.loadState = false;
+              });
           });
+        });
       }, 700);
     },
   },
@@ -415,9 +505,6 @@ export default {
 .container-video {
   position: relative;
   width: 100%;
-  // padding-bottom: 35%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
-  // height: 480px;
-  // margin-bottom: 20px;
   iframe {
     position: absolute;
     top: 0;
@@ -440,14 +527,13 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 4; /* number of lines to show */
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 .all-lines {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  //    -webkit-line-clamp: 2; /* number of lines to show */
   -webkit-box-orient: vertical;
 }
 </style>
