@@ -77,7 +77,7 @@
             </svg>
           </div>
         </router-link>
-        <div class="search-bar-desktop align-center">
+        <div class="search-bar-desktop">
           <form @submit.prevent="search">
             <div class="row space-between" v-if="isMobile">
               <span
@@ -138,22 +138,12 @@ export default {
   },
   data() {
     return {
-      isMobile: null,
       query: "",
       searchText: true,
     };
   },
-  created() {
-    window.addEventListener("resize", this.checkMobile);
-    this.checkMobile();
-  },
-  destroyed() {
-    window.removeEventListener("resize", this.checkMobile);
-  },
+  created() {},
   methods: {
-    checkMobile() {
-      this.isMobile = window.innerWidth <= 500;
-    },
     search() {
       if (this.isMobile) {
         this.searchText = !this.searchText;
@@ -165,7 +155,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .fixed-header {
   position: fixed;
   height: 50px;
@@ -173,11 +163,27 @@ export default {
   width: 100%;
 }
 
+.space-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.container {
+  width: 100%;
+  height: auto;
+}
+.content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .logo-desktop {
   height: 20px;
   width: 90px;
 }
 .logo-mobile {
+  // height: 60px;
   margin-block: 5px;
   width: 50px;
   img {
@@ -199,6 +205,7 @@ export default {
   border-radius: 3px;
   font-size: 14px;
 }
+
 #search-input[type="text"] {
   width: 89%;
   height: 35px;
@@ -253,4 +260,5 @@ export default {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), inset 0 0 2px rgba(0, 0, 0, 0.05);
   transition: all 0.07s ease-in-out;
 }
+
 </style>
