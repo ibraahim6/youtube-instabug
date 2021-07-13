@@ -175,129 +175,127 @@
               :to="
                 video.type == 'channel'
                   ? `/channel/${video.id}`
-                  : video.type == 'playlist'
-                  ? `/video/playlist/${video.id}/1`
-                  : `/video/video/${video.id}/0`
+                  : `/video/${video.id}`
               "
             >
-              <div class="card-content">
-                <div :class="`card-thumbnails img-${video.type}`">
-                  <img
-                    :src="video.snippet.thumbnails.medium.url"
-                    :width="video.snippet.thumbnails.medium.width"
-                    alt=""
-                  />
-                  <span class="duration" v-if="video.type == 'video'">
-                    {{ durationFormat(video.contentDetails.duration) }}</span
-                  >
-                  <div class="overlay-playlist" v-if="video.type == 'playlist'">
-                    <div class="content">
-                      <span>{{ video.contentDetails.itemCount }}</span
-                      ><i class="fas fa-stream"></i>
-                    </div>
-                  </div>
-                  <div class="overlay-playall" v-if="video.type == 'playlist'">
-                    <div class="content">
-                      <i class="fas fa-play"></i> <span>PLAY ALL</span>
-                    </div>
+            <div class="card-content">
+              <div :class="`card-thumbnails img-${video.type}`">
+                <img
+                  :src="video.snippet.thumbnails.medium.url"
+                  :width="video.snippet.thumbnails.medium.width"
+                  alt=""
+                />
+                <span class="duration" v-if="video.type == 'video'">
+                  {{ durationFormat(video.contentDetails.duration) }}</span
+                >
+                <div class="overlay-playlist" v-if="video.type == 'playlist'">
+                  <div class="content">
+                    <span>{{ video.contentDetails.itemCount }}</span
+                    ><i class="fas fa-stream"></i>
                   </div>
                 </div>
-                <div class="card-information">
-                  <h3 class="card-title">
-                    {{ video.snippet.title }}
-                  </h3>
-                  <!-- video -->
-                  <div v-if="video.type === 'video'">
-                    <h5 class="card-data">
-                      <router-link :to="`/channel/${video.snippet.channelId}`">
-                        <span class="channel-title">
-                          <bdi>
-                            {{ `${video.snippet.channelTitle}` }}
-                          </bdi>
-                        </span>
-                      </router-link>
-                      <span v-if="isMobile">
-                        {{
-                          `${formatNumberWithCommas(
-                            video.statistics.viewCount,
-                            2
-                          )} views`
-                        }}
-                      </span>
-                      <span v-else>
-                        |
-                        {{
-                          `${formatNumbersWithKeys(
-                            video.statistics.viewCount,
-                            2
-                          )} | ${timeAgo(video.snippet.publishedAt)}`
-                        }}
-                      </span>
-                    </h5>
-                    <p class="card-description" v-if="!isMobile">
-                      {{ video.snippet.description }}
-                    </p>
+                <div class="overlay-playall" v-if="video.type == 'playlist'">
+                  <div class="content">
+                    <i class="fas fa-play"></i> <span>PLAY ALL</span>
                   </div>
-                  <div v-if="video.type === 'channel'">
-                    <h5 class="card-data">
-                      <span v-if="isMobile">
-                        <span class="d-block">
-                          {{
-                            `${formatNumbersWithKeys(
-                              video.statistics.subscriberCount,
-                              2
-                            )} subscribers`
-                          }}
-                        </span>
-                        <span class="d-block">
-                          {{
-                            `${formatNumbersWithKeys(
-                              video.statistics.videoCount,
-                              2
-                            )} videos`
-                          }}
-                        </span>
-                      </span>
-                      <span v-else>
+                </div>
+              </div>
+              <div class="card-information">
+                <h3 class="card-title">
+                  {{ video.snippet.title }}
+                </h3>
+                <!-- video -->
+                <div v-if="video.type === 'video'">
+                  <h5 class="card-data">
+                    <router-link :to="`/channel/${video.snippet.channelId}`">
+                    <span class="channel-title">
+                      <bdi>
+                        {{ `${video.snippet.channelTitle}` }}
+                      </bdi>
+                    </span>
+                    </router-link>
+                    <span v-if="isMobile">
+                      {{
+                        `${formatNumberWithCommas(
+                          video.statistics.viewCount,
+                          2
+                        )} views`
+                      }}
+                    </span>
+                    <span v-else>
+                      |
+                      {{
+                        `${formatNumbersWithKeys(
+                          video.statistics.viewCount,
+                          2
+                        )} | ${timeAgo(video.snippet.publishedAt)}`
+                      }}
+                    </span>
+                  </h5>
+                  <p class="card-description" v-if="!isMobile">
+                    {{ video.snippet.description }}
+                  </p>
+                </div>
+                <div v-if="video.type === 'channel'">
+                  <h5 class="card-data">
+                    <span v-if="isMobile">
+                      <span class="d-block">
                         {{
                           `${formatNumbersWithKeys(
                             video.statistics.subscriberCount,
                             2
-                          )} subscribers | ${formatNumbersWithKeys(
+                          )} subscribers`
+                        }}
+                      </span>
+                      <span class="d-block">
+                        {{
+                          `${formatNumbersWithKeys(
                             video.statistics.videoCount,
                             2
                           )} videos`
                         }}
                       </span>
-                    </h5>
-                    <p v-if="!isMobile" class="card-description">
-                      {{ video.snippet.description }}
-                    </p>
-                  </div>
-                  <div v-if="video.type === 'playlist'">
-                    <h5 class="card-data">
-                      <router-link :to="`/channel/${video.snippet.channelId}`">
+                    </span>
+                    <span v-else>
+                      {{
+                        `${formatNumbersWithKeys(
+                          video.statistics.subscriberCount,
+                          2
+                        )} subscribers | ${formatNumbersWithKeys(
+                          video.statistics.videoCount,
+                          2
+                        )} videos`
+                      }}
+                    </span>
+                  </h5>
+                  <p v-if="!isMobile" class="card-description">
+                    {{ video.snippet.description }}
+                  </p>
+                </div>
+                <div v-if="video.type === 'playlist'">
+                  <h5 class="card-data">
+                    <router-link :to="`/channel/${video.snippet.channelId}`">
                         <span class="channel-title">
                           <bdi>
                             {{ `${video.snippet.channelTitle}` }}
                           </bdi>
                         </span>
                       </router-link>
-                    </h5>
-
-                    <p
-                      class="card-description"
-                      v-for="(videoItem, idx) in video.listItems.slice(
-                        0,
-                        isMobile ? 1 : 2
-                      )"
-                      :key="idx"
-                    >
-                      {{ videoItem.snippet.title }}
-                    </p>
-                  </div>
+                  </h5>
+                
+                  <p
+                    class="card-description"
+                    v-for="(videoItem, idx) in video.listItems.slice(
+                      0,
+                      isMobile ? 1 : 2
+                    )"
+                    :key="idx"
+                  >
+                    {{ videoItem.snippet.title }}
+                  </p>
                 </div>
               </div>
+            </div>
             </router-link>
           </div>
         </div>
@@ -418,7 +416,7 @@ export default {
         type: "videos",
         options: {
           part: "snippet,statistics,contentDetails",
-          maxResults: "5",
+          maxResults: "2",
           regionCode: "eg",
           chart: "mostPopular",
           pageToken: "",
@@ -430,7 +428,7 @@ export default {
           part: "id",
           q: this.q,
           type: "any",
-          maxResults: "5",
+          maxResults: "3",
           regionCode: "eg",
           pageToken: "",
           order: "relevance",
@@ -509,6 +507,14 @@ export default {
           isSelected: false,
         },
       ],
+      options: {
+        part: "snippet",
+        type: "any",
+        maxResults: "20",
+        regionCode: "eg",
+        chart: "mostPopular",
+        pageToken: "",
+      },
     };
   },
   created() {

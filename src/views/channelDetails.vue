@@ -55,15 +55,7 @@
           <div v-if="videos.length" class="row">
             <div v-for="(video, idx) in videos" :key="idx" class="column ma-8">
               <div class="card">
-                <router-link
-                  :to="
-                    video.type == 'channel'
-                      ? `/channel/${video.id}`
-                      : video.type == 'playlist'
-                      ? `/video/playlist/${video.id}/1`
-                      : `/video/video/${video.id}/0`
-                  "
-                >
+                <router-link :to="`/video/${video.id}`">
                   <div class="card-content w-100">
                     <div :class="`card-thumbnails img-${video.type}`">
                       <img
@@ -259,7 +251,7 @@
 <script>
 import { apiClient } from "@/config";
 export default {
-  name: "ChannelDetails",
+  name: "Home",
   components: {
     IntersectionObserver: () => import("@/components/infiniteScroll"),
   },
@@ -313,12 +305,13 @@ export default {
         options: {
           part: "id",
           channelId: this.id,
-          maxResults: "5",
+          maxResults: "3",
           //   regionCode: "eg",
           pageToken: "",
           order: "date",
         },
       },
+
       videoInfo: null,
       channelInfo: null,
       listVideos: [],
@@ -396,17 +389,6 @@ export default {
     formatDate(date) {
       return new Date(date).toString().slice(4, 16);
     },
-    search() {
-      this.videos = [];
-      this.loadBar = true;
-      this.$emit("loadingBar", true);
-      setTimeout(() => {
-        this.$emit("loadingBar", false);
-      }, 3000);
-      this.fetchSearch();
-      this.loadState = false;
-    },
-
     returnQuery() {
       if (this.videoInfo.items[0].kind.includes("video")) {
         return `search?part=id&relatedToVideoId=${this.videoInfo.items[0].id}&type=video&maxResults=2&pageToken=${this.pageToken}`;
@@ -422,7 +404,6 @@ export default {
             ? res3.data.nextPageToken
             : "";
           res3.data.items.map((item) => {
-            //   if (this.type == "video") {
             apiClient
               .get(
                 `/videos?part=id,snippet,statistics,contentDetails&id=${
