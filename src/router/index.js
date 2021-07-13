@@ -21,7 +21,8 @@ const routes = [
         component: () => import("@/views/Home.vue"),
       },
       {
-        path: "/video",
+        path: "/video/:id",
+        props: true,
         name: "videoDetails",
         component: () => import("@/views/videoDetails.vue"),
       },

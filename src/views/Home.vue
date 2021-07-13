@@ -175,9 +175,7 @@
               :to="
                 video.type == 'channel'
                   ? `/channel/${video.id}`
-                  : video.type == 'playlist'
-                  ? `/video/playlist/${video.id}/1`
-                  : `/video/video/${video.id}/0`
+                  : `/video/${video.id}`
               "
             >
             <div class="card-content">

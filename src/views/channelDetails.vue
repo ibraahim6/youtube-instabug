@@ -55,7 +55,7 @@
           <div v-if="videos.length" class="row">
             <div v-for="(video, idx) in videos" :key="idx" class="column ma-8">
               <div class="card">
-                <router-link :to="`/channel/${video.id}`">
+                <router-link :to="`/video/${video.id}`">
                   <div class="card-content w-100">
                     <div :class="`card-thumbnails img-${video.type}`">
                       <img
