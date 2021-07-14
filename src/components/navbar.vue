@@ -260,5 +260,4 @@ export default {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), inset 0 0 2px rgba(0, 0, 0, 0.05);
   transition: all 0.07s ease-in-out;
 }
-
 </style>
