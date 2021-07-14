@@ -1,5 +1,14 @@
 # youtube-instabug
 
+## .env File
+```
+Please Make Sure a YouTube api key in .env file is valid
+```
+
+## Project setup
+```
+npm install
+```
 ## Project setup
 ```
 npm install
